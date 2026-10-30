@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<!-- Configuración del documento y de su adaptación a pantallas pequeñas. -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#06171b">
+		<title>Culebra</title>
+		<!-- Icono, estilos y JavaScript; defer espera a que se analice el HTML. -->
+		<link rel="icon" type="image/png" href="media/cabeza_snake.png">
+		<link rel="stylesheet" href="styles/styles.css">
+		<script src="scripts/main.js" defer></script>
+	</head>
+	<body>
+		<!-- Menú inicial con el formulario que solicita el nombre del jugador. -->
+		<main id="home-screen" class="home-screen" aria-label="Menú principal de Snake">
+			<div class="home-controls">
+				<form id="player-form" class="home-form">
+					<label for="player-name">NOMBRE DEL JUGADOR</label>
+					<div class="home-actions">
+						<input id="player-name" name="player" type="text" maxlength="18" autocomplete="nickname" placeholder="Escribe tu nombre" required>
+						<button class="menu-button menu-button-primary" type="submit">Jugar</button>
+						<button id="scores-button" class="menu-button menu-button-secondary" type="button">Puntuaciones</button>
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<!-- Pantalla de la partida; permanece oculta hasta validar el formulario inicial. -->
+		<main id="game-screen" class="game-shell" hidden>
+			<section class="map-layout" aria-label="Partida de Snake">
+				<!-- Marcador actual y récord local, actualizados desde JavaScript. -->
+				<section class="score-readouts" aria-label="Marcador">
+					<output id="live-score" class="live-score" aria-label="Puntuación de esta partida">000</output>
+					<output id="record-score" class="record-score" aria-label="Récord personal">000</output>
+				</section>
+				<div class="board-wrap">
+					<!-- Referencias decorativas para leer coordenadas; no intervienen en el juego. -->
+					<div class="coordinate coordinate-top" aria-hidden="true">
+						<span>00</span><span>02</span><span>05</span><span>07</span><span>09</span>
+					</div>
+					<div class="coordinate coordinate-left" aria-hidden="true">
+						<span>00</span><span>02</span><span>05</span><span>07</span><span>09</span>
+					</div>
+					<!-- El JavaScript crea aquí las 100 celdas que forman la cuadrícula. -->
+					<div
+						id="game-board"
+						class="game-board"
+						role="grid"
+						aria-label="Mapa de Snake de 10 columnas por 10 filas"
+						aria-rowcount="10"
+						aria-colcount="10"
+					></div>
+					<!-- Ejes inferior y derecho, sólo visuales y ocultos a lectores de pantalla. -->
+					<div class="coordinate coordinate-bottom" aria-hidden="true">
+						<span>X</span><span>02</span><span>05</span><span>07</span><span>09</span>
+					</div>
+					<div class="coordinate coordinate-right" aria-hidden="true">
+						<span>Y</span><span>02</span><span>05</span><span>07</span><span>09</span>
+					</div>
+				</div>
+
+				<!-- Controles de la partida y mensaje que anuncia su estado actual. -->
+				<div class="game-controls">
+					<button id="start-button" class="menu-button menu-button-primary" type="button">Empezar a jugar</button>
+					<button id="game-scores-button" class="menu-button menu-button-secondary" type="button">Puntuaciones</button>
+					<p id="game-message" class="game-message" aria-live="polite">Pulsa empezar para preparar la partida.</p>
+				</div>
+			</section>
+		</main>
+
+		<!-- Diálogo nativo para consultar y actualizar la clasificación. -->
+		<dialog id="scores-dialog" class="scores-dialog" aria-labelledby="scores-title">
+			<section class="scores-panel" aria-describedby="scores-status">
+				<header class="scores-header">
+					<div>
+				<h2 id="scores-title">PUNTUACIONES</h2>
+					</div>
+					<button id="scores-close" class="scores-icon-button" type="button" aria-label="Cerrar puntuaciones" title="Cerrar">×</button>
+				</header>
+				<!-- Área para los estados de carga, error y clasificación vacía. -->
+				<p id="scores-status" class="scores-status" data-state="loading" aria-live="polite" role="status">Cargando puntuaciones...</p>
+				<!-- La tabla se muestra cuando la respuesta contiene puntuaciones válidas. -->
+				<div id="scores-table-wrap" class="scores-table-wrap" hidden>
+					<table class="scores-table" aria-label="Las diez mejores puntuaciones">
+						<thead>
+							<tr><th scope="col">#</th><th scope="col">Jugador</th><th scope="col">Puntos</th></tr>
+						</thead>
+						<tbody id="scores-table-body"></tbody>
+					</table>
+				</div>
+				<!-- Indica el tipo de clasificación y contiene el botón de actualización. -->
+				<footer class="scores-footer">
+					<span id="scores-mode-label">TOP 10</span>
+					<button id="scores-refresh" class="menu-button menu-button-secondary" type="button">Actualizar</button>
+				</footer>
+			</section>
+		</dialog>
+	</body>
+</html>

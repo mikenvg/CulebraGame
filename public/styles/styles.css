@@ -1,0 +1,395 @@
+/* Variables globales: paleta, tipografía y color de texto compartidos. */
+:root {
+  color-scheme: dark;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+  background: #06171b;
+  color: #ddf1e7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --cyan: #20bde8;
+  --green: #a6ff16;
+  --muted: #6d9294;
+}
+
+/* El ancho y alto incluyen padding y bordes para simplificar el cálculo de cajas. */
+* { box-sizing: border-box; }
+
+/* Hace que el atributo HTML hidden oculte las dos pantallas intercambiables. */
+[hidden] { display: none !important; }
+
+/* Fondo general del sitio, fijo para que no se desplace con el contenido. */
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: #06171b url('../media/background.png') center top / cover fixed no-repeat;
+}
+
+/* Pantalla del juego: ocupa como mínimo todo el alto visible. */
+.game-shell {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Zona posicionada sobre el panel del fondo donde aparecen puntos y récord. */
+.score-readouts {
+  position: fixed;
+  top: var(--score-panel-top);
+  left: var(--score-panel-left);
+  width: var(--score-panel-width);
+  height: var(--score-panel-height);
+  pointer-events: none;
+}
+
+/* Estilos compartidos por ambos números: centrado, contraste y cifras tabulares. */
+.live-score, .record-score {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: #ddfff5;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 12px rgba(32, 189, 232, .55);
+}
+
+/* Puntuación de esta partida, colocada en la parte superior del panel. */
+.live-score {
+  top: 30.5%;
+  left: 8%;
+  width: 84%;
+  height: 37%;
+  font-size: clamp(20px, 3.4vh, 38px);
+  font-weight: 600;
+}
+
+/* Récord local, con color verde para distinguirlo de los puntos actuales. */
+.record-score {
+  top: 77.5%;
+  left: 51%;
+  width: 42%;
+  height: 16%;
+  color: var(--green);
+  font-size: clamp(12px, 1.8vh, 22px);
+  font-weight: 600;
+}
+
+/* Menú con imagen de fondo y controles alineados en la zona inferior. */
+.home-screen {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 32px clamp(16px, 5vw, 72px) clamp(30px, 7vh, 72px);
+  background: #04101e url('../media/inicio_snake.png') center / cover no-repeat;
+  isolation: isolate;
+}
+
+/* Capa oscura sobre la parte baja de la imagen para mejorar la legibilidad. */
+.home-screen::before {
+  position: absolute;
+  z-index: -1;
+  inset: 45% 0 0;
+  background: linear-gradient(180deg, transparent, rgba(2, 10, 22, .25) 24%, rgba(2, 10, 22, .9));
+  content: '';
+}
+
+/* Limita el ancho del formulario sin exceder el espacio disponible. */
+.home-controls { width: min(100%, 800px); }
+
+/* El formulario apila la etiqueta y el grupo de campo/botones. */
+.home-form {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+/* Apariencia de la etiqueta del nombre. */
+.home-form label {
+  color: #a5cecf;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+}
+
+/* Campo de nombre y botones distribuidos en una fila. */
+.home-actions {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  gap: 10px;
+}
+
+/* Campo con tamaño flexible y colores legibles sobre el fondo oscuro. */
+.home-actions input {
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 15px;
+  border: 1px solid rgba(80, 199, 208, .6);
+  border-radius: 3px;
+  outline: none;
+  background: rgba(3, 17, 31, .86);
+  color: #effff4;
+  font: 500 13px 'Liberation Mono', 'Courier New', monospace;
+}
+
+/* Placeholder y foco visible para navegación con teclado. */
+.home-actions input::placeholder { color: #78959c; }
+.home-actions input:focus-visible { border-color: var(--green); box-shadow: 0 0 0 2px rgba(166, 255, 22, .2); }
+
+/* Estilo compartido por los botones: dimensiones, cursor, fuente y transición. */
+.menu-button {
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  font: 600 12px 'Liberation Mono', 'Courier New', monospace;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+/* Variantes principal/secundaria y estados al pasar el puntero o recibir foco. */
+.menu-button-primary { background: var(--green); color: #10200a; }
+.menu-button-primary:hover { background: #c1ff59; }
+.menu-button-secondary { border-color: rgba(102, 203, 211, .65); background: rgba(4, 20, 35, .86); color: #d5f6ef; }
+.menu-button-secondary:hover { border-color: #9df6f0; background: rgba(9, 43, 59, .95); }
+.menu-button:focus-visible { outline: 2px solid #eaff86; outline-offset: 3px; }
+
+/* Diálogo nativo de puntuaciones: limita dimensiones y define su superficie. */
+.scores-dialog {
+  width: min(calc(100% - 32px), 520px);
+  max-height: min(680px, calc(100dvh - 32px));
+  padding: 0;
+  border: 1px solid rgba(102, 203, 211, .55);
+  border-radius: 4px;
+  background: #071a22;
+  color: #ddf1e7;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .48);
+}
+
+/* Oscurece el fondo exterior y organiza el diálogo como cabecera, contenido y pie. */
+.scores-dialog::backdrop { background: rgba(1, 7, 15, .78); }
+.scores-panel { display: grid; grid-template-rows: auto minmax(90px, 1fr) auto; max-height: inherit; }
+.scores-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 24px 26px 18px; border-bottom: 1px solid rgba(102, 203, 211, .18); }
+.scores-dialog h2 { margin: 6px 0 0; font: 700 32px 'Arial Narrow', 'Liberation Sans Narrow', sans-serif; }
+.scores-icon-button { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid rgba(102, 203, 211, .3); border-radius: 3px; background: transparent; color: #d5f6ef; cursor: pointer; font: 400 24px/1 'Liberation Mono', 'Courier New', monospace; }
+.scores-icon-button:hover { border-color: var(--cyan); color: var(--cyan); }
+.scores-icon-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+/* Mensajes de estado centrados durante carga, error o ausencia de resultados. */
+.scores-status { min-height: 90px; display: grid; place-items: center; margin: 0; padding: 22px 26px; color: #a9c3c0; font-size: 12px; line-height: 1.7; text-align: center; }
+/* Indicador de carga dibujado y animado con CSS. */
+.scores-status[data-state="loading"]::before { width: 18px; height: 18px; margin-bottom: 10px; border: 2px solid rgba(32, 189, 232, .25); border-top-color: var(--cyan); border-radius: 50%; animation: score-spin 700ms linear infinite; content: ''; }
+.scores-status[data-state="error"] { color: #ffb6a8; }
+.scores-status[data-state="empty"] { color: #a9c3c0; }
+.scores-table-wrap { max-height: min(52vh, 440px); overflow: auto; scrollbar-color: #28636a #071a22; }
+.scores-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.scores-table th { position: sticky; top: 0; z-index: 1; padding: 11px 18px; background: #0b252d; color: #83aaa8; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-align: left; text-transform: uppercase; }
+.scores-table th:first-child, .score-position { width: 62px; padding-left: 26px; }
+.scores-table th:last-child, .score-value { width: 96px; padding-right: 26px; text-align: right; }
+.scores-table td { height: 48px; padding: 10px 18px; border-bottom: 1px solid rgba(102, 203, 211, .1); }
+.scores-table tbody tr:last-child td { border-bottom: 0; }
+.scores-table tbody tr:nth-child(even) { background: rgba(32, 189, 232, .035); }
+.score-position { color: #6d9294; font-variant-numeric: tabular-nums; }
+.score-player { max-width: 250px; overflow-wrap: anywhere; color: #e0f2eb; }
+.score-value { color: #ddfff5; font-weight: 600; font-variant-numeric: tabular-nums; }
+.is-current-player { background: rgba(166, 255, 22, .08) !important; }
+.is-current-player .score-position, .is-current-player .score-player, .is-current-player .score-value { color: var(--green); }
+.current-player-badge { display: inline-block; margin-left: 10px; padding: 3px 5px; border: 1px solid rgba(166, 255, 22, .45); border-radius: 2px; color: var(--green); font-size: 8px; line-height: 1; vertical-align: 1px; }
+.scores-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px 14px 26px; border-top: 1px solid rgba(102, 203, 211, .18); color: var(--muted); font-size: 8px; letter-spacing: .8px; }
+.scores-footer #scores-mode-label { overflow-wrap: anywhere; }
+.scores-footer .menu-button { min-height: 36px; padding-inline: 14px; font-size: 10px; }
+.scores-footer .menu-button:disabled { cursor: wait; opacity: .55; }
+
+/* Completa una vuelta para el indicador circular del estado de carga. */
+@keyframes score-spin { to { transform: rotate(360deg); } }
+
+/* Estilo del texto pequeño que identifica la sección del diálogo. */
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 1.4px;
+}
+
+/* Contenedor relativo que sirve de referencia para ubicar tablero y controles. */
+.map-layout {
+  --board-wrap-size: min(calc(58vh + 31px), calc(100vw - 24px), 650px);
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Marco cuadrado del tablero, centrado y animado al aparecer. */
+.board-wrap {
+  position: absolute;
+  top: 46.8vh;
+  right: 0;
+  left: 0;
+  width: var(--board-wrap-size);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  padding: 12px;
+  translate: -5px -50%;
+  animation: board-enter 600ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+/* Reparte el área en una cuadrícula uniforme de diez filas y diez columnas. */
+.game-board {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+/* Cada celda muestra el fondo del mapa y una animación de entrada escalonada. */
+.grid-cell {
+  min-width: 0;
+  min-height: 0;
+  background: #061b20 url('../media/mapa_snake.png') center / 110% 110% no-repeat;
+  image-rendering: pixelated;
+  animation: cell-enter 350ms both;
+}
+
+/* Las piezas se colocan por encima del mapa y conservan el aspecto pixelado. */
+.snake-head, .snake-body-straight, .snake-body-corner, .snake-tail, .food-cell {
+  position: relative;
+  z-index: 1;
+  image-rendering: pixelated;
+}
+
+/* Pseudo-elemento común: dibuja cada imagen sin añadir nodos hijos a las celdas. */
+.snake-head::after, .snake-body-straight::after, .snake-body-corner::after, .snake-tail::after, .food-cell::after {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  content: '';
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* Sprite de cabeza normal; --rotation lo orienta según la dirección de movimiento. */
+.snake-head::after {
+  inset: -17%;
+  background: url('../media/cabeza_snake.png') center / contain no-repeat;
+  transform: rotate(var(--rotation));
+}
+
+/* En caso de derrota cambia sólo la imagen de cabeza, conservando su rotación. */
+.snake-head-dead::after {
+  background-image: url('../media/cabeza_snake_muerta.png');
+}
+
+/* Segmento recto: muestra una zona del spritesheet y la rota según el eje. */
+.snake-body-straight::after {
+  inset: 5%;
+  background: url('../media/recto_curva_snake.png') 9.3% 50% / 421% 307% no-repeat;
+  transform: rotate(var(--rotation));
+}
+
+/* Segmento curvo: muestra otra zona del mismo spritesheet con su orientación calculada. */
+.snake-body-corner::after {
+  inset: 5%;
+  background: url('../media/recto_curva_snake.png') 72% 21% / 455% 226% no-repeat;
+  transform: rotate(var(--rotation));
+}
+
+/* Sprite de cola, con una orientación base distinta de la cabeza. */
+.snake-tail::after {
+  inset: -17%;
+  background: url('../media/cola_snake.png') center / contain no-repeat;
+  transform: rotate(var(--rotation));
+}
+
+/* La comida usa las coordenadas --food-x/y que JavaScript establece en la celda. */
+.food-cell::after {
+  background-image: url('../media/comidas_snake.png');
+  background-size: 700% 200%;
+  background-position: var(--food-x) var(--food-y);
+}
+
+/* Controles centrados bajo el tablero en pantallas estrechas o casi cuadradas. */
+.game-controls {
+  position: absolute;
+  top: 77vh;
+  left: 50%;
+  width: min(100%, 640px);
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding-top: 14px;
+  transform: translateX(-50%);
+}
+
+/* Ajusta botones y mensaje dentro de la pantalla de juego. */
+.game-controls .menu-button { min-height: 40px; padding-inline: 17px; }
+.game-controls .menu-button:disabled { opacity: .72; cursor: default; }
+.game-message { margin: 0; color: #91b4ad; font-size: 10px; line-height: 1.5; }
+.game-message:empty { display: none; }
+
+/* Cuando la pantalla es apaisada, el tablero y sus controles pasan a una composición lateral. */
+@media (min-aspect-ratio: 13/10) {
+  .map-layout {
+    --board-wrap-size: min(max(35.47vw, 63.02vh), 650px);
+  }
+
+  .board-wrap {
+    top: max(26.4vw, 46.9vh);
+    padding: max(1.56vw, 2.76vh);
+    translate: -.3vw -50%;
+  }
+
+  .game-controls {
+    top: calc(max(19.56vw, 34.75vh) + 24px);
+    left: 72.4vw;
+    width: min(19.3vw, 360px);
+    min-height: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0;
+    transform: none;
+    text-align: left;
+  }
+}
+
+/* Coordenadas decorativas alrededor del marco; no capturan eventos del ratón. */
+.coordinate {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  color: #609397;
+  font-size: 8px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Posición y orientación de las marcas en cada lado del tablero. */
+.coordinate-top, .coordinate-bottom { right: 20px; left: 20px; }
+.coordinate-top { top: 0; }
+.coordinate-bottom { bottom: 0; }
+.coordinate-left, .coordinate-right { top: 20px; bottom: 20px; flex-direction: column; }
+.coordinate-left { left: 0; }
+.coordinate-right { right: 0; text-align: right; }
+
+/* Entrada del marco: aparece desde abajo con un cambio de escala discreto. */
+@keyframes board-enter {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Aparición gradual de las celdas; el retraso individual lo calcula JavaScript. */
+@keyframes cell-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Reduce las animaciones si el sistema operativo tiene activada esa preferencia. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
